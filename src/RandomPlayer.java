@@ -5,7 +5,7 @@ public class RandomPlayer extends Player {
     Random rand;
     public RandomPlayer(byte player) {
         super(player);
-        this.team = "Pluto";
+        this.team = "Bot";
         this.rand = new Random();
     }
 
