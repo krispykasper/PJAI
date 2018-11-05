@@ -1,13 +1,13 @@
 import java.util.HashSet;
 
-public class Pluto extends Player {
+public class Pluto2 extends Player {
 
 
     private static final int LIMIT = 5;
 
 
 
-    public Pluto(byte player) {
+    public Pluto2(byte player) {
 
         super(player);
 
@@ -125,17 +125,25 @@ public class Pluto extends Player {
                 if(discNum < 16){
 
                 }else if(discNum < 32){
-//                    if(board[i][j] == player && i >= 2 && i <= 5 && j >= 2 && j <= 5){
-//                        score += 5;
+
+//                    if(board[i][j] == player && ((i == 0 && j == 0) || (i == 0 && j == 7) || (i == 7 && j == 0) || (i == 7 && j == 7))){
+//                        score += 10;
+//                    }else {
+//                        score++;
 //                    }
                 }else if(discNum < 48){
 
+//                    if(board[i][j] == player && ((i == 0 && j == 0) || (i == 0 && j == 7) || (i == 7 && j == 0) || (i == 7 && j == 7))){
+//                        score += 10;
+//                    }else {
+//                        score++;
+//                    }
                 }else {
-                    if(board[i][j] == player && ((i == 0 && j == 0) || (i == 0 && j == 7) || (i == 7 && j == 0) || (i == 7 && j == 7))){
-                        score += 10;
-                    }else {
-                        score++;
-                    }
+//                    if(board[i][j] == player && ((i == 0 && j == 0) || (i == 0 && j == 7) || (i == 7 && j == 0) || (i == 7 && j == 7))){
+//                        score += 10;
+//                    }else {
+//                        score++;
+//                    }
                 }
 
             }
