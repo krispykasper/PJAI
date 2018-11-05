@@ -1,9 +1,11 @@
 import java.util.HashSet;
+import java.util.Random;
 
 public class Pluto extends Player {
 
 
     private static final int LIMIT = 5;
+    Random rand = new Random();
 
 
 
@@ -56,7 +58,6 @@ public class Pluto extends Player {
         if (legalMoves.size() == 0 || depth > LIMIT) {
 
 //            return OthelloGame.computeScore(state.getBoard(), this.player);
-
             return evalution(state.getBoard(), this.player);
         }
 
@@ -122,18 +123,43 @@ public class Pluto extends Player {
 
         for(int i = 0; i < board.length; i++){
             for(int j = 0; j < board[0].length; j++){
+
                 if(discNum < 16){
-
+                    if(board[i][j] == player && i >= 2 && i <= 5 && j >= 2 && j <= 5){
+                        score += 5;
+                    }
                 }else if(discNum < 32){
-//                    if(board[i][j] == player && i >= 2 && i <= 5 && j >= 2 && j <= 5){
-//                        score += 5;
-//                    }
-                }else if(discNum < 48){
+                    if(board[i][j] == player && (i==1 || i==6)){
+                        if(j==1 || j==6){
+                            score +=4;
+                        }
+                        else if(j!=2 || j!=5){
+                            score +=3;
+                        }
+                        else{
+                            score++;
+                        }
+                    }
+                    else if(board[i][j] == player && (j==1 || j==6)){
+                        if(i==1 || i==6){
+                            score +=4;
+                        }
+                        else if(i!=2 || i!=5){
+                            score +=3;
+                        }
+                        else{
+                            score++;
+                        }
+                    }
 
-                }else {
+                }else if(discNum < 48){
                     if(board[i][j] == player && ((i == 0 && j == 0) || (i == 0 && j == 7) || (i == 7 && j == 0) || (i == 7 && j == 7))){
-                        score += 10;
-                    }else {
+                        score += 4;
+                    }else if(board[i][j] == player) {
+                        score ++;
+                    }
+                }else {
+                    if(board[i][j] == player){
                         score++;
                     }
                 }
@@ -141,7 +167,8 @@ public class Pluto extends Player {
             }
         }
 
-        return OthelloGame.computeScore(board, player);
+
+        return score;
     }
 
 }
