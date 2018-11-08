@@ -220,94 +220,90 @@ public class OthelloGUI extends JPanel {
     }
 
     public static void main(String[] args) {
-        Random rand = new Random();
-        OthelloState state = new OthelloState(
-            OthelloGame.N, OthelloGame.E, OthelloGame.B, OthelloGame.W);
-        HashSet<Move> legalMoves = OthelloGame.getAllLegalMoves(
-            state.getBoard(), state.getPlayer());
-        OthelloGUI content = new OthelloGUI(state);
-        JFrame window = new JFrame("Othello");
-        window.setContentPane(content);
-        window.setSize(600, 500);
-        // window.setLocation(100,100);
-        window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        window.setVisible(true);
+        for(int n = 0; n < 10; n++){
 
-        boolean over = false;
+            Random rand = new Random();
+            OthelloState state = new OthelloState(
+                    OthelloGame.N, OthelloGame.E, OthelloGame.B, OthelloGame.W);
+            HashSet<Move> legalMoves = OthelloGame.getAllLegalMoves(
+                    state.getBoard(), state.getPlayer());
+            OthelloGUI content = new OthelloGUI(state);
+            JFrame window = new JFrame("Othello");
+            window.setContentPane(content);
+            window.setSize(600, 500);
+            // window.setLocation(100,100);
+            window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            window.setVisible(true);
 
-        for (int turn = 0; turn < OthelloGame.N * OthelloGame.N; turn++){
-            byte[][] curBoard = state.getBoard();
-            byte curPlayer = state.getPlayer();
-            int blackScore = OthelloGame.computeScore(curBoard, OthelloGame.B);
-            int whiteScore = OthelloGame.computeScore(curBoard, OthelloGame.W);
-            HashSet<Move> disLegalMoves = new HashSet<>(legalMoves);
-            boolean disOver = over;
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            Future<Move> future = executor.submit(new TimedPlayer(state, legalMoves));
-            Move move = null;
-            Timer timer = null;
-            if (!over) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("-------------------------------------\n");
-                sb.append("Move Number: ");
-                sb.append(turn + 1);
-                sb.append('\n');
-                sb.append(state);
-                sb.append("Player: ");
-                if (curPlayer == OthelloGame.B) {
-                    sb.append(Black.player.name());
-                    sb.append(" (Black)\n");
-                } else {
-                    sb.append(White.player.name());
-                    sb.append(" (White)\n");
-                }
-                sb.append("...thinking...");
-                System.out.println(sb.toString());
-            }
-            try {
-                timer = new Timer();
-                timer.scheduleAtFixedRate(new TimerTask(){
-                    int time = 10;
-                    @Override
-                    public void run(){
-                        content.board.updateInfo(curBoard, disLegalMoves);
-                        content.status.updateInfo(
-                            curPlayer, blackScore, whiteScore, time--, disOver);
-                        window.repaint();
-                    }
-                }, 0, 1000);
+            boolean over = false;
+
+            for (int turn = 0; turn < OthelloGame.N * OthelloGame.N; turn++) {
+                byte[][] curBoard = state.getBoard();
+                byte curPlayer = state.getPlayer();
+                int blackScore = OthelloGame.computeScore(curBoard, OthelloGame.B);
+                int whiteScore = OthelloGame.computeScore(curBoard, OthelloGame.W);
+                HashSet<Move> disLegalMoves = new HashSet<>(legalMoves);
+                boolean disOver = over;
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Future<Move> future = executor.submit(new TimedPlayer(state, legalMoves));
+                Move move = null;
+                Timer timer = null;
                 if (!over) {
-                    move = future.get(10, TimeUnit.SECONDS);
-                }
-            } catch (TimeoutException e){
-                future.cancel(true);
-                System.out.println("Timeout, the game will random a move.");
-            } catch (Exception e){
-                System.out.println("Error");
-                e.printStackTrace();
-            } finally {
-                if (over) { break; }
-                if (timer != null) { timer.cancel(); }
-                if (move == null) {
-                    move = (Move) legalMoves.toArray()[rand.nextInt(legalMoves.size())];
-                }
-                System.out.println("Move: " + move);
-                state = OthelloGame.transition(state, move);
-                legalMoves = OthelloGame.getAllLegalMoves(state.getBoard(), state.getPlayer());
-                if (legalMoves.size() == 0) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("-------------------------------------\n");
-                    if (state.getPlayer() == OthelloGame.B) {
+                    sb.append("Move Number: ");
+                    sb.append(turn + 1);
+                    sb.append('\n');
+                    sb.append(state);
+                    sb.append("Player: ");
+                    if (curPlayer == OthelloGame.B) {
                         sb.append(Black.player.name());
-                        sb.append(" (Black)");
+                        sb.append(" (Black)\n");
                     } else {
                         sb.append(White.player.name());
-                        sb.append(" (White)");
+                        sb.append(" (White)\n");
                     }
-                    sb.append(" is out of move!\n");
-                    state.togglePlayer();
+                    sb.append("...thinking...");
+//                    System.out.println(sb.toString());
+                }
+                try {
+                    timer = new Timer();
+                    timer.scheduleAtFixedRate(new TimerTask() {
+                        int time = 10;
+
+                        @Override
+                        public void run() {
+                            content.board.updateInfo(curBoard, disLegalMoves);
+                            content.status.updateInfo(
+                                    curPlayer, blackScore, whiteScore, time--, disOver);
+                            window.repaint();
+                        }
+                    }, 0, 1000);
+                    if (!over) {
+                        move = future.get(10, TimeUnit.SECONDS);
+                    }
+                } catch (TimeoutException e) {
+                    future.cancel(true);
+//                    System.out.println("Timeout, the game will random a move.");
+                } catch (Exception e) {
+//                    System.out.println("Error");
+                    e.printStackTrace();
+                } finally {
+                    if (over) {
+                        break;
+                    }
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+                    if (move == null) {
+                        move = (Move) legalMoves.toArray()[rand.nextInt(legalMoves.size())];
+                    }
+//                    System.out.println("Move: " + move);
+                    state = OthelloGame.transition(state, move);
                     legalMoves = OthelloGame.getAllLegalMoves(state.getBoard(), state.getPlayer());
                     if (legalMoves.size() == 0) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("-------------------------------------\n");
                         if (state.getPlayer() == OthelloGame.B) {
                             sb.append(Black.player.name());
                             sb.append(" (Black)");
@@ -316,15 +312,29 @@ public class OthelloGUI extends JPanel {
                             sb.append(" (White)");
                         }
                         sb.append(" is out of move!\n");
-                        sb.append("Game Over");
-                        over = true;
+                        state.togglePlayer();
+                        legalMoves = OthelloGame.getAllLegalMoves(state.getBoard(), state.getPlayer());
+                        if (legalMoves.size() == 0) {
+                            if (state.getPlayer() == OthelloGame.B) {
+                                sb.append(Black.player.name());
+                                sb.append(" (Black)");
+                            } else {
+                                sb.append(White.player.name());
+                                sb.append(" (White)");
+                            }
+                            sb.append(" is out of move!\n");
+                            sb.append("Game Over");
+                            over = true;
+                        }
+//                        System.out.println(sb.toString());
                     }
-                    System.out.println(sb.toString());
                 }
+                executor.shutdown();
             }
-            executor.shutdown();
-        }
+
     }
+    }
+
 }
 
 class TimedPlayer implements Callable<Move> {
